@@ -1,6 +1,7 @@
+import 'package:costcalculator/widgets/new_transaction.dart';
+import 'package:costcalculator/widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
-import 'transaction.dart';
-import 'package:intl/intl.dart';
+import './models/transaction.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,92 +17,76 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   // This widget is the root of your application.
 
-  final List<Transaction> transactions = [
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final List<Transaction> _userTransactions = [
     Transaction(
         id: 't1', title: 'new shoes', amount: 69.99, date: DateTime.now()),
     Transaction(
         id: 't2', title: 'shopping', amount: 169.99, date: DateTime.now()),
   ];
 
-  // String titleInput;
-  // String amountInput;
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
+  void _addNewTransaction(String txTitle, double txAmount) {
+    final newTX = Transaction(
+      id: DateTime.now().toString(),
+      title: txTitle,
+      amount: txAmount,
+      date: DateTime.now(),
+    );
+
+    //this makes the change to state
+    setState(() {
+      _userTransactions.add(newTX);
+    });
+  }
+
+  void _startAddNewTransaction(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (bCtx) {
+        return NewTransaction(_addNewTransaction);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cost calculator')),
-      body: Column(
-        //mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            child: Card(
-              child: Container(child: Text('Chart')),
-            ),
-          ),
-          Card(
-              child: Container(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              children: <Widget>[
-                TextField(
-                  decoration: InputDecoration(labelText: 'Title'),
-                  controller: titleController,
-                  //onChanged: (val) => {titleInput = val},
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: 'Amount'),
-                  controller: amountController,
-                  //onChanged: (val) => {amountInput = val},
-                ),
-                TextButton(
-                    onPressed: () => {},
-                    child: Text('add'),
-                    style: TextButton.styleFrom(primary: Colors.purple))
-              ],
-            ),
-          )),
-          Column(
-            children: transactions.map((tx) {
-              return Card(
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 2)),
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          //tx.amount.toString(),
-                          '\$${tx.amount}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.purple),
-                        )),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(tx.title, style: TextStyle(fontSize: 16)),
-                        Text(DateFormat().format(tx.date),
-                            style: TextStyle(color: Colors.grey)),
-                      ],
-                    )
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
+      appBar: AppBar(
+        title: Text('Cost calculator'),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () => _startAddNewTransaction(context),
+              icon: Icon(Icons.add))
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          //alignment
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(
+                width: double.infinity,
+                child: //Container(child: Text('Chart')
+                    Card(
+                  child:
+                      //Text('Chart'),
+                      Container(child: Text('Chart')),
+                )),
+            TransactionList(_userTransactions),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
       ),
     );
   }
