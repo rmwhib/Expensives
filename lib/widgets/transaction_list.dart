@@ -11,6 +11,7 @@ class TransactionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 300,
+        //this replaces the list.map
         child: ListView.builder(
           itemBuilder: (ctx, index) {
             return Card(
@@ -35,8 +36,12 @@ class TransactionList extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(transactions[index].title,
-                          style: TextStyle(fontSize: 16)),
+                      Text(
+                        transactions[index].title,
+                        //textTheme
+                        style: Theme.of(context).textTheme.title,
+                        //TextStyle(fontSize: 16)
+                      ),
                       Text(DateFormat().format(transactions[index].date),
                           style: TextStyle(color: Colors.grey)),
                     ],
